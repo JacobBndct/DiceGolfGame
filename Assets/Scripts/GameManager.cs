@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,6 +12,9 @@ public class GameManager : MonoBehaviour
     public static bool CanAdvance = true;
     
     private AudioSource audioSource;
+    private SceneTransitionHandler sceneTransitionHandler;
+
+    [SerializeField] private TextMeshProUGUI holeText;
 
     private void Awake()
     {
@@ -28,11 +32,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
+        sceneTransitionHandler = GetComponent<SceneTransitionHandler>();
         
         // Advance to next scene if we are in the first scene
         if (SceneManager.GetActiveScene().buildIndex == 0)
         {
-            NextScene();
+            sceneTransitionHandler.NextScene();
         }
         
         // Play music
@@ -42,26 +47,29 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
-            Restart();
+            sceneTransitionHandler.Restart();
         
         if (Input.GetKeyDown(KeyCode.Space) && CanAdvance)
         {
-            NextScene();
+            sceneTransitionHandler.TransitionToNextScene();
             CanAdvance = false;
         }
     }
-
-    private void Restart()
+    
+    public void UpdateHoleText()
     {
-        // Restarts the current Scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
+        // Build index is always off by one but I don't care this works enough
+        var buildIndex = SceneManager.GetActiveScene().buildIndex;
 
-    private void NextScene()
-    {
-        int currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
-        if (currentBuildIndex < SceneManager.sceneCountInBuildSettings - 1)
-            SceneManager.LoadScene(currentBuildIndex + 1);
+        if (buildIndex < 1 || buildIndex == SceneManager.sceneCountInBuildSettings-2)
+        {
+            holeText.gameObject.SetActive(false);
+            return;
+        }
+        
+        holeText.gameObject.SetActive(true);
+        
+        holeText.text = "Hole " + (buildIndex);
     }
 
     public void Win()
