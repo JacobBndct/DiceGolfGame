@@ -32,19 +32,28 @@ public class SceneTransitionHandler : MonoBehaviour
     public void NextScene()
     {
         int currentBuildIndex = SceneManager.GetActiveScene().buildIndex;
-        if (currentBuildIndex < SceneManager.sceneCountInBuildSettings - 1)
+        if (currentBuildIndex < SceneManager.sceneCountInBuildSettings - 2)
         {
             SceneManager.LoadScene(currentBuildIndex + 1);
             AnimateIn();
             gameManager.UpdateHoleText();
+            gameManager.UpdateRollsText();
         }
-        
+        else if (currentBuildIndex < SceneManager.sceneCountInBuildSettings - 1)
+        {
+            SceneManager.LoadScene(currentBuildIndex + 1);
+            AnimateIn();
+            gameManager.UpdateHoleText();
+            gameManager.DisableRollsText();
+            gameManager.ShowScore();
+        }
     }
     
     public void Restart()
     {
         // Restarts the current Scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        gameManager.ResetRollCount();
     }
 
     public void TransitionToNextScene()

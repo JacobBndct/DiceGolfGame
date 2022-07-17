@@ -82,6 +82,9 @@ public class DieMovement : MonoBehaviour
         this.direction = direction;
         movesToMake = dieValue;
 
+        
+        GameManager.Instance.IncreaseRolls();
+        
         rollCoroutine = StartCoroutine(Roll());
     }
     
